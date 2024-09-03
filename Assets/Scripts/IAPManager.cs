@@ -45,6 +45,8 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 {
 
     public AudioClip coinColletSFX;
+    public AudioClip noAdsSFX;
+    public AudioClip r_passSFX;
     public AudioSource _source;
 
     // Add a reference to the Button component
@@ -65,8 +67,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public SubscriptionItem sItem;
     private void Start()
     {
-        int coins = PlayerPrefs.GetInt("totalCoins");
-        //PlayerPrefs.SetInt("totalCoins", 0);  //To reset coins counter
+        coins = PlayerPrefs.GetInt("totalCoins");
         coinTxt.text = coins.ToString();
         SetupBuilder();
     }
@@ -153,6 +154,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     public void Quit()
     {
+
         Application.Quit();
         Debug.Log("Quit");
     } 
@@ -178,11 +180,34 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public void OnPurchaseFailed(Product product, PurchaseFailureDescription failureDescription)
     {
         print("purchase failed" + failureDescription);
+
+        // Re-enable the corresponding button based on the failed product
+        if (product.definition.id == cItem.Id)
+        {
+            consumableButton.interactable = true;
+        }
+        else if (product.definition.id == ncItem.Id)
+        {
+            nonConsumableButton.interactable = true;
+        }
+        else if (product.definition.id == sItem.Id)
+        {
+            subscriptionButton.interactable = true;
+        }
     }
     #endregion
 
 
     #region extra 
+
+    private int coins;
+    public void ResetCoinsCounter()
+    {
+        PlayerPrefs.SetInt("totalCoins", 0);  //To reset coins counter
+        coins = PlayerPrefs.GetInt("totalCoins");
+        coinTxt.text = coins.ToString();
+        _source.PlayOneShot(coinColletSFX);
+    }
 
     [Header("Consumable")]
     public TextMeshProUGUI coinTxt;
@@ -216,6 +241,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
     public GameObject adsBanner;
     void RemoveAds()
     {
+        _source.PlayOneShot(noAdsSFX);
         DisplayAds(false);
     }
     void ShowAds()
@@ -243,6 +269,7 @@ public class IAPManager : MonoBehaviour, IDetailedStoreListener
 
     void ActivateElitePass()
     {
+        _source.PlayOneShot(r_passSFX);
         setupElitePass(true);
     }
     void DeActivateElitePass()

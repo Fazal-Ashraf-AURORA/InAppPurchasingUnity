@@ -22,9 +22,4 @@ public class ClickyButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         _img.sprite = _default;
         _source.PlayOneShot(_uncompressClip);
     }
-
-    public void IwasClicked()
-    {
-        Debug.Log("Clicked");
-    }
 }
